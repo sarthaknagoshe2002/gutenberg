@@ -31,6 +31,13 @@ $button-spacing-y: math.div($grid-unit-15, 2); // 6px
 	flex: auto;
 	flex-wrap: nowrap;
 	max-width: 100%;
+	min-width: 220px;
+
+	.wp-block-search__button {
+		padding-left: 18px;
+		padding-right: 18px;
+		max-width: 87.5px;
+	}
 }
 
 .wp-block-search__label {
