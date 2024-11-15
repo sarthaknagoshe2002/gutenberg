@@ -109,6 +109,7 @@ export default function PostStatus() {
 	);
 	const { editEntityRecord } = useDispatch( coreStore );
 	const [ popoverAnchor, setPopoverAnchor ] = useState( null );
+	const [ error, setError ] = useState( '' );
 	// Memoize popoverProps to avoid returning a new object every time.
 	const popoverProps = useMemo(
 		() => ( {
@@ -163,6 +164,21 @@ export default function PostStatus() {
 		} );
 	};
 
+	const handlePassword = ( { password: newPassword = password } ) => {
+		if ( newPassword.length > 255 ) {
+			setError( __( 'Password cannot exceed 255 characters.' ) );
+		} else {
+			setError( '' );
+			updatePost( { password: newPassword } );
+		}
+	};
+
+	const handleFocusOut = () => {
+		if ( password.trim() === '' ) {
+			handleTogglePassword( false );
+		}
+	};
+
 	return (
 		<PostPanelRow label={ __( 'Status' ) } ref={ setPopoverAnchor }>
 			{ canEdit ? (
@@ -171,6 +187,7 @@ export default function PostStatus() {
 					contentClassName="editor-change-status__content"
 					popoverProps={ popoverProps }
 					focusOnMount
+					onToggle={ handleFocusOut }
 					renderToggle={ ( { onToggle, isOpen } ) => (
 						<Button
 							className="editor-post-status__toggle"
@@ -244,7 +261,7 @@ export default function PostStatus() {
 															'Password'
 														) }
 														onChange={ ( value ) =>
-															updatePost( {
+															handlePassword( {
 																password: value,
 															} )
 														}
@@ -256,8 +273,12 @@ export default function PostStatus() {
 														id={ passwordInputId }
 														__next40pxDefaultSize
 														__nextHasNoMarginBottom
-														maxLength={ 255 }
 													/>
+													{ error && (
+														<p className="editor-change-status__error">
+															{ error }
+														</p>
+													) }
 												</div>
 											) }
 										</VStack>

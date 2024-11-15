@@ -32,4 +32,12 @@
 		margin-top: $grid-unit-05;
 	}
 
+	.editor-change-status__error {
+		background-color: var(--wp--preset--color--accent-6);
+		color: $alert-red;
+		padding: 10px;
+		border-radius: 4px;
+		margin-bottom: 0;
+	}
+
 }
