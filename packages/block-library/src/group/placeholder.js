@@ -132,8 +132,14 @@ export function useShouldShowPlaceHolder( {
  * @return {JSX.Element}                The placeholder.
  */
 function GroupPlaceHolder( { name, onSelect } ) {
-	const variations = useSelect(
-		( select ) => select( blocksStore ).getBlockVariations( name, 'block' ),
+	const { variations, blockType } = useSelect(
+		( select ) => {
+			const store = select( blocksStore );
+			return {
+				variations: store.getBlockVariations( name, 'block' ),
+				blockType: store.getBlockType( name ),
+			};
+		},
 		[ name ]
 	);
 	const blockProps = useBlockProps( {
@@ -149,6 +155,8 @@ function GroupPlaceHolder( { name, onSelect } ) {
 	return (
 		<div { ...blockProps }>
 			<Placeholder
+				label={ __( 'Group' ) }
+				icon={ blockType.icon.src }
 				instructions={ __( 'Group blocks together. Select a layout:' ) }
 			>
 				{ /*
@@ -174,7 +182,15 @@ function GroupPlaceHolder( { name, onSelect } ) {
 								onClick={ () => onSelect( variation ) }
 								className="wp-block-group-placeholder__variation-button"
 								label={ `${ variation.title }: ${ variation.description }` }
-							/>
+								aria-describedby={ `${ variation.title }: ${ variation.description }` }
+							>
+								<span className="screen-reader-text">
+									{ variation.title }
+								</span>
+							</Button>
+							<span className="wp-block-group-placeholder___variation-label">
+								{ variation.title }
+							</span>
 						</li>
 					) ) }
 				</ul>
