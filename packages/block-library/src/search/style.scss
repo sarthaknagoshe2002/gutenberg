@@ -34,9 +34,11 @@ $button-spacing-y: math.div($grid-unit-15, 2); // 6px
 	min-width: 220px;
 
 	button.wp-block-search__button {
-		padding-left: 16px;
-		padding-right: 16px;
-		max-width: 87.5px;
+		// !important used to forcibly prevent undesired padding of
+		// various different active themes.
+		padding-left: 10px !important;
+		padding-right: 10px !important;
+		max-width: 7vw;
 	}
 }
 
