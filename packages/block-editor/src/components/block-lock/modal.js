@@ -100,7 +100,7 @@ export default function BlockLockModal( { clientId, onClose } ) {
 				<fieldset className="block-editor-block-lock-modal__options">
 					<legend>
 						{ __(
-							'Choose specific attributes to restrict or lock all available options.'
+							'Choose "Lock all" to disable all actions, or select specific features to lock.'
 						) }
 					</legend>
 					{ /*
@@ -137,7 +137,7 @@ export default function BlockLockModal( { clientId, onClose } ) {
 									<li className="block-editor-block-lock-modal__checklist-item">
 										<CheckboxControl
 											__nextHasNoMarginBottom
-											label={ __( 'Restrict editing' ) }
+											label={ __( 'Lock editing' ) }
 											checked={ !! lock.edit }
 											onChange={ ( edit ) =>
 												setLock( ( prevLock ) => ( {
@@ -159,7 +159,7 @@ export default function BlockLockModal( { clientId, onClose } ) {
 								<li className="block-editor-block-lock-modal__checklist-item">
 									<CheckboxControl
 										__nextHasNoMarginBottom
-										label={ __( 'Disable movement' ) }
+										label={ __( 'Lock movement' ) }
 										checked={ lock.move }
 										onChange={ ( move ) =>
 											setLock( ( prevLock ) => ( {
@@ -178,7 +178,7 @@ export default function BlockLockModal( { clientId, onClose } ) {
 								<li className="block-editor-block-lock-modal__checklist-item">
 									<CheckboxControl
 										__nextHasNoMarginBottom
-										label={ __( 'Prevent removal' ) }
+										label={ __( 'Lock removal' ) }
 										checked={ lock.remove }
 										onChange={ ( remove ) =>
 											setLock( ( prevLock ) => ( {
