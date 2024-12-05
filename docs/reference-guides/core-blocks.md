@@ -783,7 +783,7 @@ Display the total number of results in a query. ([Source](https://github.com/Wor
 
 -	**Name:** core/query-total
 -	**Category:** theme
--	**Parent:** core/query-pagination, core/query
+-	**Ancestor:** core/query
 -	**Supports:** align (full, wide), color (background, gradients, text), spacing (margin, padding), typography (fontSize, lineHeight), ~~html~~
 -	**Attributes:** displayType
 
