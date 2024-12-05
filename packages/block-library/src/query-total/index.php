@@ -8,7 +8,7 @@
 /**
  * Renders the `query-total` block on the server.
  *
- * @since 6.7.0
+ * @since 6.8.0
  *
  * @param array    $attributes Block attributes.
  * @param string   $content    Block default content.
@@ -73,7 +73,7 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 /**
  * Registers the `query-total` block.
  *
- * @since 6.7.0
+ * @since 6.8.0
  */
 function register_block_core_query_total() {
 	register_block_type_from_metadata(
