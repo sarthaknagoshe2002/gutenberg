@@ -99,9 +99,7 @@ export default function BlockLockModal( { clientId, onClose } ) {
 			>
 				<fieldset className="block-editor-block-lock-modal__options">
 					<legend>
-						{ __(
-							'Choose "Lock all" to disable all actions, or select specific features to lock.'
-						) }
+						{ __( 'Select the features you want to lock' ) }
 					</legend>
 					{ /*
 					 * Disable reason: The `list` ARIA role is redundant but
