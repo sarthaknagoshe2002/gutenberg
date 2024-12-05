@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import clsx from 'clsx';
-
-/**
  * WordPress dependencies
  */
 import {
@@ -16,36 +11,20 @@ import {
 	ToolbarGroup,
 	ToolbarDropdownMenu,
 } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { resultsFound, displayingResults } from './icons';
 
-export default function QueryTotalEdit( {
-	attributes,
-	setAttributes,
-	className,
-} ) {
+export default function QueryTotalEdit( { attributes, setAttributes } ) {
 	const { displayType } = attributes;
 
-	const [ totalResults, setTotalResults ] = useState( 0 );
-	const [ currentPage, setCurrentPage ] = useState( 1 );
-	const [ resultsPerPage, setResultsPerPage ] = useState( 10 );
-
-	// Fetch or calculate the total results, current page, and results per page.
-	useEffect( () => {
-		// Mock values for demonstration. Replace with actual query data.
-		const mockTotalResults = 12;
-		const mockCurrentPage = 1;
-		const mockResultsPerPage = 10;
-
-		setTotalResults( mockTotalResults );
-		setCurrentPage( mockCurrentPage );
-		setResultsPerPage( mockResultsPerPage );
-	}, [] );
+	// Mock values.
+	const totalResults = 12;
+	const currentPage = 1;
+	const resultsPerPage = 10;
 
 	// Helper to calculate the range for "Displaying X – Y of Z".
 	const calculateRange = () => {
@@ -55,9 +34,7 @@ export default function QueryTotalEdit( {
 	};
 
 	// Block properties and classes.
-	const blockProps = useBlockProps( {
-		className: clsx( className, 'query-total-block' ),
-	} );
+	const blockProps = useBlockProps();
 
 	const getButtonPositionIcon = () => {
 		switch ( displayType ) {
@@ -114,12 +91,27 @@ export default function QueryTotalEdit( {
 	// Render output based on the selected display type.
 	const renderDisplay = () => {
 		if ( displayType === 'total-results' ) {
-			return <div>{ `${ totalResults } results found` }</div>;
+			return (
+				<div>
+					{ sprintf(
+						/* translators: %d is the total number of results found. */
+						__( '%d results found' ),
+						totalResults
+					) }
+				</div>
+			);
 		}
 
 		if ( displayType === 'range-display' ) {
 			return (
-				<div>{ `Displaying ${ calculateRange() } of ${ totalResults }` }</div>
+				<div>
+					{ sprintf(
+						/* translators: %1$s is the range (e.g., 1–10), %2$d is the total number of results. */
+						__( 'Displaying %1$s of %2$d' ),
+						calculateRange(),
+						totalResults
+					) }
+				</div>
 			);
 		}
 
