@@ -40,25 +40,36 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 	switch ( $attributes['displayType'] ) {
 		case 'total-results':
 			$output = sprintf(
-				'<p><strong>%d</strong> %s found</p>',
+				'<p><strong>%d</strong> %s</p>',
 				$max_rows,
-				_n( 'result', 'results', $max_rows, 'default' )
+				_n( 'result found', 'results found', $max_rows, 'default' )
 			);
 			break;
 
 		case 'range-display':
 			$range_text = $start === $end
-				? sprintf( 'Displaying <strong>%d</strong> of <strong>%d</strong>', $start, $max_rows )
-				: sprintf( 'Displaying <strong>%d – %d</strong> of <strong>%d</strong>', $start, $end, $max_rows );
+				? sprintf(
+					/* translators: 1: Start index of posts, 2: Total number of posts */
+					__( 'Displaying <strong>%1$d</strong> of <strong>%2$d</strong>', 'default' ),
+					$start,
+					$max_rows
+				)
+				: sprintf(
+					/* translators: 1: Start index of posts, 2: End index of posts, 3: Total number of posts */
+					__( 'Displaying <strong>%1$d – %2$d</strong> of <strong>%3$d</strong>', 'default' ),
+					$start,
+					$end,
+					$max_rows
+				);
 
 			$output = sprintf( '<p>%s</p>', $range_text );
 			break;
 
 		default:
 			$output = sprintf(
-				'<p><strong>%d</strong> %s found</p>',
+				'<p><strong>%d</strong> %s</p>',
 				$max_rows,
-				_n( 'result', 'results', $max_rows, 'default' )
+				_n( 'result found', 'results found', $max_rows, 'default' )
 			);
 			break;
 	}
