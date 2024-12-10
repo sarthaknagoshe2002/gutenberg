@@ -38,15 +38,6 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 	// Prepare the display based on the `displayType` attribute.
 	$output = '';
 	switch ( $attributes['displayType'] ) {
-		case 'total-results':
-		default:
-			$output = sprintf(
-				'<p><strong>%d</strong> %s</p>',
-				$max_rows,
-				_n( 'result found', 'results found', $max_rows )
-			);
-			break;
-
 		case 'range-display':
 			if ( $start === $end ) {
 				$range_text = sprintf(
@@ -66,6 +57,15 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 			}
 
 			$output = sprintf( '<p>%s</p>', $range_text );
+			break;
+
+		case 'total-results':
+		default:
+			$output = sprintf(
+				'<p><strong>%d</strong> %s</p>',
+				$max_rows,
+				_n( 'result found', 'results found', $max_rows )
+			);
 			break;
 	}
 
