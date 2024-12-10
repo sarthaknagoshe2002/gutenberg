@@ -1,16 +1,8 @@
 /**
  * WordPress dependencies
  */
-import {
-	useBlockProps,
-	InspectorControls,
-	BlockControls,
-} from '@wordpress/block-editor';
-import {
-	PanelBody,
-	ToolbarGroup,
-	ToolbarDropdownMenu,
-} from '@wordpress/components';
+import { useBlockProps, BlockControls } from '@wordpress/block-editor';
+import { ToolbarGroup, ToolbarDropdownMenu } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -66,13 +58,6 @@ export default function QueryTotalEdit( { attributes, setAttributes } ) {
 					/>
 				</ToolbarGroup>
 			</BlockControls>
-			<InspectorControls>
-				<PanelBody title={ __( 'Display Settings' ) }>
-					<p>
-						{ __( 'Choose the type of information to display.' ) }
-					</p>
-				</PanelBody>
-			</InspectorControls>
 		</>
 	);
 
