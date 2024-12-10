@@ -8,10 +8,7 @@ import { gmdate, strtotime } from 'locutus/php/datetime';
  */
 import { __ } from '@wordpress/i18n';
 import { toggleFormat } from '@wordpress/rich-text';
-import {
-	RichTextToolbarButton,
-	RichTextShortcut,
-} from '@wordpress/block-editor';
+import { RichTextToolbarButton } from '@wordpress/block-editor';
 import { postDate as icon } from '@wordpress/icons';
 
 const name = 'core/time';
@@ -61,7 +58,6 @@ export const time = {
 
 			// Format the datetime attributes using gmdate
 			const datetime = gmdate( 'c', timestamp ); // ISO 8601 format
-			const datetimeISO = gmdate( 'Ymd\\THi', timestamp ); // Compact ISO format
 
 			// Apply the format with parsed datetime attributes
 			onChange(
@@ -69,8 +65,6 @@ export const time = {
 					type: name,
 					attributes: {
 						datetime,
-						'data-iso': datetimeISO,
-						style: 'text-decoration: underline; text-decoration-style: dotted',
 					},
 				} )
 			);
@@ -80,11 +74,6 @@ export const time = {
 
 		return (
 			<>
-				<RichTextShortcut
-					type="access"
-					character="d"
-					onUse={ onClick }
-				/>
 				<RichTextToolbarButton
 					icon={ icon }
 					title={ title }

@@ -39,7 +39,6 @@
 		"@wordpress/icons": "*",
 		"@wordpress/private-apis": "*",
 		"@wordpress/rich-text": "*",
-		"@wordpress/url": "*",
 		"locutus": "2.0.32"
 	},
 	"peerDependencies": {
