@@ -33,14 +33,14 @@
 		"@wordpress/components": "*",
 		"@wordpress/compose": "*",
 		"@wordpress/data": "*",
+		"@wordpress/date": "*",
 		"@wordpress/element": "*",
 		"@wordpress/html-entities": "*",
 		"@wordpress/i18n": "*",
 		"@wordpress/icons": "*",
 		"@wordpress/private-apis": "*",
 		"@wordpress/rich-text": "*",
-		"@wordpress/url": "*",
-		"locutus": "2.0.32"
+		"@wordpress/url": "*"
 	},
 	"peerDependencies": {
 		"react": "^18.0.0",
