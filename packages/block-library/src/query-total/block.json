@@ -11,6 +11,22 @@
 		"displayType": {
 			"type": "string",
 			"default": "total-results"
+		},
+		"totalResultsText": {
+			"type": "string",
+			"default": "results found"
+		},
+		"rangeDisplayTextPrimary": {
+			"type": "string",
+			"default": "Displaying"
+		},
+		"rangeDisplayTextSecondary": {
+			"type": "string",
+			"default": "of"
+		},
+		"showTotal": {
+			"type": "boolean",
+			"default": true
 		}
 	},
 	"usesContext": [ "queryId", "query" ],
