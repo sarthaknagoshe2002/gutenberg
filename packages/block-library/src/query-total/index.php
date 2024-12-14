@@ -48,7 +48,11 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 				: __( 'of' );
 
 			$range_text = $range_text_primary . '&nbsp;' .
-				'<strong>' . $start . '</strong>' . ' – ' . '<strong>' . $end . '</strong>';
+				'<strong>' . $start . '</strong>';
+
+			if ( $start !== $end ) {
+				$range_text .= ' – ' . '<strong>' . $end . '</strong>';
+			}
 
 			// Append "of {total}" only if `showTotal` is true.
 			if ( ! isset( $attributes['showTotal'] ) || $attributes['showTotal'] ) {
