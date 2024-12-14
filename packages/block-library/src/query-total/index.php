@@ -39,21 +39,20 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 	$output = '';
 	switch ( $attributes['displayType'] ) {
 		case 'range-display':
-			if ( $start === $end ) {
-				$range_text = sprintf(
-					/* translators: 1: Start index of posts, 2: Total number of posts */
-					__( 'Displaying %1$s of %2$s' ),
-					'<strong>' . $start . '</strong>',
-					'<strong>' . $max_rows . '</strong>'
-				);
-			} else {
-				$range_text = sprintf(
-					/* translators: 1: Start index of posts, 2: End index of posts, 3: Total number of posts */
-					__( 'Displaying %1$s – %2$s of %3$s' ),
-					'<strong>' . $start . '</strong>',
-					'<strong>' . $end . '</strong>',
-					'<strong>' . $max_rows . '</strong>'
-				);
+			$range_text_primary = isset( $attributes['rangeDisplayTextPrimary'] ) && ! empty( $attributes['rangeDisplayTextPrimary'] )
+				? $attributes['rangeDisplayTextPrimary']
+				: __( 'Displaying' );
+
+			$range_text_secondary = isset( $attributes['rangeDisplayTextSecondary'] ) && ! empty( $attributes['rangeDisplayTextSecondary'] )
+				? $attributes['rangeDisplayTextSecondary']
+				: __( 'of' );
+
+			$range_text = $range_text_primary . '&nbsp;' .
+				'<strong>' . $start . '</strong>' . ' – ' . '<strong>' . $end . '</strong>';
+
+			// Append "of {total}" only if `showTotal` is true.
+			if ( ! isset( $attributes['showTotal'] ) || $attributes['showTotal'] ) {
+				$range_text .= '&nbsp;' . $range_text_secondary . '&nbsp;' . '<strong>' . $max_rows . '</strong>';
 			}
 
 			$output = sprintf( '<p>%s</p>', $range_text );
@@ -61,10 +60,14 @@ function render_block_core_query_total( $attributes, $content, $block ) {
 
 		case 'total-results':
 		default:
+			$total_results_text = isset( $attributes['totalResultsText'] ) && ! empty( $attributes['totalResultsText'] )
+				? $attributes['totalResultsText']
+				: _n( 'result found', 'results found', $max_rows );
+
 			$output = sprintf(
 				'<p><strong>%d</strong> %s</p>',
 				$max_rows,
-				_n( 'result found', 'results found', $max_rows )
+				$total_results_text
 			);
 			break;
 	}

@@ -1,8 +1,16 @@
 /**
  * WordPress dependencies
  */
-import { useBlockProps, BlockControls } from '@wordpress/block-editor';
-import { ToolbarGroup, ToolbarDropdownMenu } from '@wordpress/components';
+import {
+	useBlockProps,
+	BlockControls,
+	RichText,
+} from '@wordpress/block-editor';
+import {
+	ToolbarGroup,
+	ToolbarDropdownMenu,
+	ToolbarButton,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -11,7 +19,13 @@ import { __ } from '@wordpress/i18n';
 import { resultsFound, displayingResults } from './icons';
 
 export default function QueryTotalEdit( { attributes, setAttributes } ) {
-	const { displayType } = attributes;
+	const {
+		displayType,
+		totalResultsText,
+		rangeDisplayTextPrimary,
+		rangeDisplayTextSecondary,
+		showTotal,
+	} = attributes;
 
 	// Block properties and classes.
 	const blockProps = useBlockProps();
@@ -56,6 +70,18 @@ export default function QueryTotalEdit( { attributes, setAttributes } ) {
 						label={ __( 'Change display type' ) }
 						controls={ buttonPositionControls }
 					/>
+					{ /* Show toggle for "showTotal" only when range-display is selected */ }
+					{ displayType === 'range-display' && (
+						<ToolbarButton
+							icon={ showTotal ? 'visibility' : 'hidden' }
+							label={ __( 'Toggle total visibility' ) }
+							onClick={ () =>
+								setAttributes( { showTotal: ! showTotal } )
+							}
+						>
+							{ __( 'Toggle Total visibility' ) }
+						</ToolbarButton>
+					) }
 				</ToolbarGroup>
 			</BlockControls>
 		</>
@@ -64,11 +90,58 @@ export default function QueryTotalEdit( { attributes, setAttributes } ) {
 	// Render output based on the selected display type.
 	const renderDisplay = () => {
 		if ( displayType === 'total-results' ) {
-			return <div>{ __( '12 results found' ) }</div>;
+			return (
+				<div>
+					<span>
+						<strong>12</strong>{ ' ' }
+					</span>
+					<RichText
+						tagName="span"
+						value={ totalResultsText }
+						placeholder={ totalResultsText }
+						onChange={ ( value ) =>
+							setAttributes( { totalResultsText: value } )
+						}
+					/>
+				</div>
+			);
 		}
 
 		if ( displayType === 'range-display' ) {
-			return <div>{ __( 'Displaying 1 – 10 of 12' ) }</div>;
+			return (
+				<div>
+					<RichText
+						tagName="span"
+						value={ rangeDisplayTextPrimary }
+						placeholder={ rangeDisplayTextPrimary }
+						onChange={ ( value ) =>
+							setAttributes( { rangeDisplayTextPrimary: value } )
+						}
+					/>
+					<span>
+						{ ' ' }
+						<strong>1 – 10</strong>{ ' ' }
+					</span>
+					{ showTotal && (
+						<>
+							<RichText
+								tagName="span"
+								value={ rangeDisplayTextSecondary }
+								placeholder={ rangeDisplayTextSecondary }
+								onChange={ ( value ) =>
+									setAttributes( {
+										rangeDisplayTextSecondary: value,
+									} )
+								}
+							/>
+							<span>
+								{ ' ' }
+								<strong>12</strong>
+							</span>
+						</>
+					) }
+				</div>
+			);
 		}
 
 		return null;

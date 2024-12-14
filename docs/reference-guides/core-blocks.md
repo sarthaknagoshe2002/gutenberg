@@ -785,7 +785,7 @@ Display the total number of results in a query. ([Source](https://github.com/Wor
 -	**Category:** theme
 -	**Ancestor:** core/query
 -	**Supports:** align (full, wide), color (background, gradients, text), spacing (margin, padding), typography (fontSize, lineHeight), ~~html~~
--	**Attributes:** displayType
+-	**Attributes:** displayType, rangeDisplayTextPrimary, rangeDisplayTextSecondary, showTotal, totalResultsText
 
 ## Quote
 
