@@ -3,7 +3,11 @@
 		"name": "core/query-total",
 		"isValid": true,
 		"attributes": {
-			"displayType": "total-results"
+			"displayType": "total-results",
+			"totalResultsText": "results found",
+			"rangeDisplayTextPrimary": "Displaying",
+			"rangeDisplayTextSecondary": "of",
+			"showTotal": true
 		},
 		"innerBlocks": []
 	}
