@@ -98,22 +98,16 @@ function addAttribute( settings ) {
  * @type {Record<string, string[]>}
  */
 const skipSerializationPathsEdit = {
-	[ `${ BORDER_SUPPORT_KEY }.__experimentalSkipSerialization` ]: [ 'border' ],
-	[ `${ COLOR_SUPPORT_KEY }.__experimentalSkipSerialization` ]: [
-		COLOR_SUPPORT_KEY,
-	],
-	[ `${ TYPOGRAPHY_SUPPORT_KEY }.__experimentalSkipSerialization` ]: [
+	[ `${ BORDER_SUPPORT_KEY }.skipSerialization` ]: [ 'border' ],
+	[ `${ COLOR_SUPPORT_KEY }.skipSerialization` ]: [ COLOR_SUPPORT_KEY ],
+	[ `${ TYPOGRAPHY_SUPPORT_KEY }.skipSerialization` ]: [
 		TYPOGRAPHY_SUPPORT_KEY,
 	],
-	[ `${ DIMENSIONS_SUPPORT_KEY }.__experimentalSkipSerialization` ]: [
+	[ `${ DIMENSIONS_SUPPORT_KEY }.skipSerialization` ]: [
 		DIMENSIONS_SUPPORT_KEY,
 	],
-	[ `${ SPACING_SUPPORT_KEY }.__experimentalSkipSerialization` ]: [
-		SPACING_SUPPORT_KEY,
-	],
-	[ `${ SHADOW_SUPPORT_KEY }.__experimentalSkipSerialization` ]: [
-		SHADOW_SUPPORT_KEY,
-	],
+	[ `${ SPACING_SUPPORT_KEY }.skipSerialization` ]: [ SPACING_SUPPORT_KEY ],
+	[ `${ SHADOW_SUPPORT_KEY }.skipSerialization` ]: [ SHADOW_SUPPORT_KEY ],
 };
 
 /**
@@ -251,7 +245,7 @@ export function omitStyle( style, paths, preserveReference = false ) {
 
 	let newStyle = style;
 	if ( ! preserveReference ) {
-		newStyle = JSON.parse( JSON.stringify( style ) );
+		newStyle = structuredClone( style );
 	}
 
 	if ( ! Array.isArray( paths ) ) {

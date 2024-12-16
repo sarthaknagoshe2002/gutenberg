@@ -112,12 +112,12 @@ function getEnabledClientIdsTreeUnmemoized( state, rootClientId ) {
 export const getEnabledClientIdsTree = createRegistrySelector( ( select ) =>
 	createSelector( getEnabledClientIdsTreeUnmemoized, ( state ) => [
 		state.blocks.order,
+		state.derivedBlockEditingModes,
+		state.derivedNavModeBlockEditingModes,
 		state.blockEditingModes,
 		state.settings.templateLock,
 		state.blockListSettings,
 		select( STORE_NAME ).__unstableGetEditorMode( state ),
-		state.zoomLevel,
-		getSectionRootClientId( state ),
 	] )
 );
 
@@ -330,7 +330,7 @@ function mapUserPattern(
 		id: userPattern.id,
 		type: INSERTER_PATTERN_TYPES.user,
 		title: userPattern.title.raw,
-		categories: userPattern.wp_pattern_category.map( ( catId ) => {
+		categories: userPattern.wp_pattern_category?.map( ( catId ) => {
 			const category = __experimentalUserPatternCategories.find(
 				( { id } ) => id === catId
 			);
@@ -402,21 +402,6 @@ export const getAllPatterns = createRegistrySelector( ( select ) =>
 		].filter(
 			( x, index, arr ) =>
 				index === arr.findIndex( ( y ) => x.name === y.name )
-		);
-	}, getAllPatternsDependants( select ) )
-);
-
-export const isResolvingPatterns = createRegistrySelector( ( select ) =>
-	createSelector( ( state ) => {
-		const blockPatternsSelect = state.settings[ selectBlockPatternsKey ];
-		const reusableBlocksSelect = state.settings[ reusableBlocksSelectKey ];
-		return (
-			( blockPatternsSelect
-				? blockPatternsSelect( select ) === undefined
-				: false ) ||
-			( reusableBlocksSelect
-				? reusableBlocksSelect( select ) === undefined
-				: false )
 		);
 	}, getAllPatternsDependants( select ) )
 );
