@@ -15,19 +15,31 @@
 			padding: $grid-unit-10 0 $grid-unit-05;
 		}
 
-		.dataviews-view-grid__primary-field {
-			min-height: $grid-unit-40; // Preserve layout when there is no ellipsis button
+		.dataviews-view-grid__title-field {
+			min-height: $grid-unit-30; // Preserve layout when there is no ellipsis button
+			display: flex;
+			align-items: center;
+
+			&--clickable {
+				width: fit-content;
+			}
 		}
+
 
 		&.is-selected {
 			.dataviews-view-grid__fields .dataviews-view-grid__field .dataviews-view-grid__field-value {
 				color: $gray-900;
 			}
-
-			.dataviews-view-grid__media::after {
-				background-color: rgba(var(--wp-admin-theme-color--rgb), 0.08);
-				box-shadow: inset 0 0 0 $border-width var(--wp-admin-theme-color);
-			}
+		}
+		&.is-selected .dataviews-view-grid__media::after,
+		.dataviews-view-grid__media:focus::after {
+			background-color: rgba(var(--wp-admin-theme-color--rgb), 0.08);
+		}
+		&.is-selected .dataviews-view-grid__media::after {
+			box-shadow: inset 0 0 0 $border-width var(--wp-admin-theme-color);
+		}
+		.dataviews-view-grid__media:focus::after {
+			box-shadow: inset 0 0 0 var(--wp-admin-border-width-focus) var(--wp-admin-theme-color);
 		}
 	}
 
@@ -74,36 +86,23 @@
 		}
 
 		.dataviews-view-grid__field {
-			align-items: flex-start;
 			min-height: $grid-unit-30;
+			align-items: center;
+
+			.dataviews-view-grid__field-name {
+				width: 35%;
+				color: $gray-700;
+			}
+
+			.dataviews-view-grid__field-value {
+				width: 65%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
 
 			&:not(:has(.dataviews-view-grid__field-value:not(:empty))) {
 				display: none;
-			}
-
-			&:not(.is-column) {
-				align-items: center;
-
-				.dataviews-view-grid__field-name {
-					width: 35%;
-				}
-
-				.dataviews-view-grid__field-value {
-					width: 65%;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-				}
-			}
-
-			&.is-column {
-				& + .is-row {
-					margin-top: $grid-unit-05;
-				}
-			}
-
-			.dataviews-view-grid__field-name {
-				color: $gray-700;
 			}
 		}
 	}
@@ -170,4 +169,8 @@
 		padding-left: $grid-unit-30;
 		padding-right: $grid-unit-30;
 	}
+}
+
+.dataviews-view-grid__media--clickable {
+	cursor: pointer;
 }

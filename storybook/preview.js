@@ -2,7 +2,7 @@
  * External dependencies
  */
 import {
-	ArgsTable,
+	Controls,
 	Description,
 	Primary,
 	Stories,
@@ -114,8 +114,7 @@ export const parameters = {
 				<Subtitle />
 				<Primary />
 				<Description />
-				{ /* `story="^"` enables Controls for the primary props table */ }
-				<ArgsTable story="^" />
+				<Controls />
 				<Stories includePrimary={ false } />
 			</>
 		),
@@ -133,14 +132,28 @@ export const parameters = {
 					'Actions',
 					'Containers',
 					'Feedback',
+					'Layout',
 					'Navigation',
+					'Overlays',
+					'Selection & Input',
+					[ 'Color', 'Common', 'File Upload', 'Time & Date' ],
+					'Typography',
 					'Utilities',
 				],
 				'Components (Experimental)',
-				[ 'Navigation' ],
+				[
+					'Actions',
+					'Layout',
+					'Navigation',
+					'Overlays',
+					'Selection & Input',
+					'Typography',
+				],
 				'Icons',
 			],
 		},
 	},
 	sourceLinkPrefix: 'https://github.com/WordPress/gutenberg/blob/trunk/',
 };
+
+export const tags = [ 'autodocs' ];

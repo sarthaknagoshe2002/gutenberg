@@ -20,7 +20,6 @@ import { privateApis as blockLibraryPrivateApis } from '@wordpress/block-library
 import { useCallback, useMemo } from '@wordpress/element';
 import { store as noticesStore } from '@wordpress/notices';
 import { privateApis as routerPrivateApis } from '@wordpress/router';
-import { store as preferencesStore } from '@wordpress/preferences';
 import { decodeEntities } from '@wordpress/html-entities';
 import { Icon, arrowUpLeft } from '@wordpress/icons';
 import { store as blockEditorStore } from '@wordpress/block-editor';
@@ -49,6 +48,12 @@ import useEditorIframeProps from '../block-editor/use-editor-iframe-props';
 import useEditorTitle from './use-editor-title';
 import { useIsSiteEditorLoading } from '../layout/hooks';
 import { useAdaptEditorToCanvas } from './use-adapt-editor-to-canvas';
+import { TEMPLATE_POST_TYPE } from '../../utils/constants';
+import {
+	useResolveEditedEntity,
+	useSyncDeprecatedEntityIntoState,
+} from './use-resolve-edited-entity';
+import { addQueryArgs } from '@wordpress/url';
 
 const { Editor, BackButton } = unlock( editorPrivateApis );
 const { useHistory, useLocation } = unlock( routerPrivateApis );
@@ -78,46 +83,64 @@ const siteIconVariants = {
 	},
 };
 
+function getListPathForPostType( postType ) {
+	switch ( postType ) {
+		case 'navigation':
+			return '/navigation';
+		case 'wp_block':
+			return '/pattern?postType=wp_block';
+		case 'wp_template_part':
+			return '/pattern?postType=wp_template_part';
+		case 'wp_template':
+			return '/template';
+		case 'page':
+			return '/page';
+		case 'post':
+			return '/';
+	}
+	throw 'Unknown post type';
+}
+
+function getNavigationPath( location, postType ) {
+	const { path, name } = location;
+	if (
+		[
+			'pattern-item',
+			'template-part-item',
+			'page-item',
+			'template-item',
+			'post-item',
+		].includes( name )
+	) {
+		return getListPathForPostType( postType );
+	}
+	return addQueryArgs( path, { canvas: undefined } );
+}
+
 export default function EditSiteEditor( { isPostsList = false } ) {
 	const disableMotion = useReducedMotion();
-	const { params } = useLocation();
-	const { canvas = 'view' } = params;
+	const location = useLocation();
+	const { canvas = 'view' } = location.query;
 	const isLoading = useIsSiteEditorLoading();
 	useAdaptEditorToCanvas( canvas );
+	const entity = useResolveEditedEntity();
+	// deprecated sync state with url
+	useSyncDeprecatedEntityIntoState( entity );
+	const { postType, postId, context } = entity;
 	const {
-		editedPostType,
-		editedPostId,
-		contextPostType,
-		contextPostId,
-		isEditingPage,
 		supportsGlobalStyles,
-		showIconLabels,
 		editorCanvasView,
 		currentPostIsTrashed,
 		hasSiteIcon,
 	} = useSelect( ( select ) => {
-		const {
-			getEditorCanvasContainerView,
-			getEditedPostContext,
-			isPage,
-			getEditedPostType,
-			getEditedPostId,
-		} = unlock( select( editSiteStore ) );
-		const { get } = select( preferencesStore );
+		const { getEditorCanvasContainerView } = unlock(
+			select( editSiteStore )
+		);
 		const { getCurrentTheme, getEntityRecord } = select( coreDataStore );
-		const _context = getEditedPostContext();
 		const siteData = getEntityRecord( 'root', '__unstableBase', undefined );
 
-		// The currently selected entity to display.
-		// Typically template or template part in the site editor.
 		return {
-			editedPostType: getEditedPostType(),
-			editedPostId: getEditedPostId(),
-			contextPostType: _context?.postId ? _context.postType : undefined,
-			contextPostId: _context?.postId ? _context.postId : undefined,
-			isEditingPage: isPage(),
 			supportsGlobalStyles: getCurrentTheme()?.is_block_theme,
-			showIconLabels: get( 'core', 'showIconLabels' ),
 			editorCanvasView: getEditorCanvasContainerView(),
 			currentPostIsTrashed:
 				select( editorStore ).getCurrentPostAttribute( 'status' ) ===
@@ -125,12 +148,15 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 			hasSiteIcon: !! siteData?.site_icon_url,
 		};
 	}, [] );
-	useEditorTitle();
+	const postWithTemplate = !! context?.postId;
+	useEditorTitle(
+		postWithTemplate ? context.postType : postType,
+		postWithTemplate ? context.postId : postId
+	);
 	const _isPreviewingTheme = isPreviewingTheme();
 	const hasDefaultEditorCanvasView = ! useHasEditorCanvasContainer();
 	const iframeProps = useEditorIframeProps();
 	const isEditMode = canvas === 'edit';
-	const postWithTemplate = !! contextPostId;
 	const loadingProgressId = useInstanceId(
 		CanvasLoader,
 		'edit-site-editor__loading-progress'
@@ -162,9 +188,11 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 				case 'move-to-trash':
 				case 'delete-post':
 					{
-						history.push( {
-							postType: items[ 0 ].type,
-						} );
+						history.navigate(
+							getListPathForPostType(
+								postWithTemplate ? context.postType : postType
+							)
+						);
 					}
 					break;
 				case 'duplicate-post':
@@ -187,11 +215,9 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 									{
 										label: __( 'Edit' ),
 										onClick: () => {
-											history.push( {
-												postId: newItem.id,
-												postType: newItem.type,
-												canvas: 'edit',
-											} );
+											history.navigate(
+												`/${ newItem.type }/${ newItem.id }?canvas=edit`
+											);
 										},
 									},
 								],
@@ -201,7 +227,13 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					break;
 			}
 		},
-		[ history, createSuccessNotice ]
+		[
+			postType,
+			context?.postType,
+			postWithTemplate,
+			history,
+			createSuccessNotice,
+		]
 	);
 
 	// Replace the title and icon displayed in the DocumentBar when there's an overlay visible.
@@ -214,22 +246,24 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 
 	return (
 		<>
-			<GlobalStylesRenderer />
+			<GlobalStylesRenderer
+				disableRootPadding={ postType !== TEMPLATE_POST_TYPE }
+			/>
 			<EditorKeyboardShortcutsRegister />
 			{ isEditMode && <BlockKeyboardShortcuts /> }
 			{ ! isReady ? <CanvasLoader id={ loadingProgressId } /> : null }
-			{ isEditMode && <WelcomeGuide /> }
+			{ isEditMode && (
+				<WelcomeGuide
+					postType={ postWithTemplate ? context.postType : postType }
+				/>
+			) }
 			{ isReady && (
 				<Editor
-					postType={
-						postWithTemplate ? contextPostType : editedPostType
-					}
-					postId={ postWithTemplate ? contextPostId : editedPostId }
-					templateId={ postWithTemplate ? editedPostId : undefined }
+					postType={ postWithTemplate ? context.postType : postType }
+					postId={ postWithTemplate ? context.postId : postId }
+					templateId={ postWithTemplate ? postId : undefined }
 					settings={ settings }
-					className={ clsx( 'edit-site-editor__editor-interface', {
-						'show-icon-labels': showIconLabels,
-					} ) }
+					className="edit-site-editor__editor-interface"
 					styles={ styles }
 					customSaveButton={
 						_isPreviewingTheme && <SaveButton size="compact" />
@@ -240,7 +274,9 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 					iframeProps={ iframeProps }
 					onActionPerformed={ onActionPerformed }
 					extraSidebarPanels={
-						! isEditingPage && <PluginTemplateSettingPanel.Slot />
+						! postWithTemplate && (
+							<PluginTemplateSettingPanel.Slot />
+						)
 					}
 				>
 					{ isEditMode && (
@@ -267,26 +303,20 @@ export default function EditSiteEditor( { isPostsList = false } ) {
 												// come here through `posts list` and are in focus mode editing a template, template part etc..
 												if (
 													isPostsList &&
-													params?.focusMode
+													location.query?.focusMode
 												) {
-													history.push(
-														{
-															page: 'gutenberg-posts-dashboard',
-															postType: 'post',
-														},
-														undefined,
-														{
-															transition:
-																'canvas-mode-view-transition',
-														}
-													);
+													history.navigate( '/', {
+														transition:
+															'canvas-mode-view-transition',
+													} );
 												} else {
-													history.push(
-														{
-															...params,
-															canvas: undefined,
-														},
-														undefined,
+													history.navigate(
+														getNavigationPath(
+															location,
+															postWithTemplate
+																? context.postType
+																: postType
+														),
 														{
 															transition:
 																'canvas-mode-view-transition',

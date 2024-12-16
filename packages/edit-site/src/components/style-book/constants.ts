@@ -108,6 +108,11 @@ export const STYLE_BOOK_THEME_SUBCATEGORIES: Omit<
 
 export const STYLE_BOOK_CATEGORIES: StyleBookCategory[] = [
 	{
+		slug: 'overview',
+		title: __( 'Overview' ),
+		blocks: [],
+	},
+	{
 		slug: 'text',
 		title: __( 'Text' ),
 		blocks: [
@@ -211,39 +216,30 @@ export const STYLE_BOOK_IFRAME_STYLES = `
 	}
 	.edit-site-style-book__duotone-example > div:not(:first-child) {
 		height: 20px;
-		border: 1px solid #ddd;
+		border: 1px solid color-mix( in srgb, currentColor 10%, transparent );
 	}
 
 	.edit-site-style-book__color-example {
-		height: 52px;
-		border: 1px solid #ddd;
-	}
-
-	.edit-site-style-book__examples.is-wide .edit-site-style-book__example {
-		flex-direction: row;
+		border: 1px solid color-mix( in srgb, currentColor 10%, transparent );
 	}
 
 	.edit-site-style-book__subcategory-title,
 	.edit-site-style-book__example-title {
 		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-		font-size: 11px;
-		font-weight: 500;
+		font-size: 13px;
+		font-weight: normal;
 		line-height: normal;
 		margin: 0;
 		text-align: left;
-		text-transform: uppercase;
+		padding-top: 8px;
+		border-top: 1px solid color-mix( in srgb, currentColor 10%, transparent );
+		color: color-mix( in srgb, currentColor 60%, transparent );
 	}
 
 	.edit-site-style-book__subcategory-title {
 		font-size: 16px;
 		margin-bottom: 40px;
-    	border-bottom: 1px solid #ddd;
     	padding-bottom: 8px;
-	}
-
-	.edit-site-style-book__examples.is-wide .edit-site-style-book__example-title {
-		text-align: right;
-		width: 120px;
 	}
 
 	.edit-site-style-book__example-preview {

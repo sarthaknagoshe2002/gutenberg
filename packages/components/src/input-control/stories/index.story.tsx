@@ -16,16 +16,17 @@ import { InputControlSuffixWrapper } from '../input-suffix-wrapper';
 import Button from '../../button';
 
 const meta: Meta< typeof InputControl > = {
-	title: 'Components (Experimental)/InputControl',
+	title: 'Components (Experimental)/Selection & Input/InputControl',
+	id: 'components-experimental-inputcontrol',
 	component: InputControl,
 	// @ts-expect-error - See https://github.com/storybookjs/storybook/issues/23170
 	subcomponents: { InputControlPrefixWrapper, InputControlSuffixWrapper },
 	argTypes: {
 		__unstableInputWidth: { control: { type: 'text' } },
-		__unstableStateReducer: { control: { type: null } },
-		onChange: { control: { type: null } },
-		prefix: { control: { type: null } },
-		suffix: { control: { type: null } },
+		__unstableStateReducer: { control: false },
+		onChange: { control: false },
+		prefix: { control: false },
+		suffix: { control: false },
 		type: { control: { type: 'text' } },
 		value: { control: { disable: true } },
 	},
@@ -45,6 +46,7 @@ export const Default = Template.bind( {} );
 Default.args = {
 	label: 'Value',
 	placeholder: 'Placeholder',
+	__next40pxDefaultSize: true,
 };
 
 export const WithHelpText = Template.bind( {} );
@@ -116,7 +118,6 @@ export const ShowPassword: StoryFn< typeof InputControl > = ( args ) => {
 	return (
 		<InputControl
 			type={ visible ? 'text' : 'password' }
-			label="Password"
 			suffix={
 				<InputControlSuffixWrapper variant="control">
 					<Button
@@ -130,4 +131,9 @@ export const ShowPassword: StoryFn< typeof InputControl > = ( args ) => {
 			{ ...args }
 		/>
 	);
+};
+ShowPassword.args = {
+	...Default.args,
+	label: 'Password',
+	placeholder: undefined,
 };
