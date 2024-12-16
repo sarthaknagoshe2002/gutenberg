@@ -6,6 +6,14 @@
 	line-height: $default-line-height;
 }
 
+.dataviews-config__popover.is-expanded .dataviews-config__popover-content-wrapper {
+	overflow-y: scroll;
+	height: 100%;
+	.dataviews-view-config {
+		width: auto;
+	}
+}
+
 .dataviews-view-config__sort-direction .components-toggle-group-control-option-base {
 	text-transform: uppercase;
 }
@@ -66,4 +74,13 @@
 		position: unset;
 		top: unset;
 	}
+}
+
+.dataviews-field-control__icon {
+	display: flex;
+	width: $icon-size;
+}
+
+.dataviews-field-control__label {
+	flex-grow: 1;
 }

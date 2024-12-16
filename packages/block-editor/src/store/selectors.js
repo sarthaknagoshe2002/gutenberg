@@ -1586,14 +1586,14 @@ export function getTemplateLock( state, rootClientId ) {
  * @param {string|Object} blockNameOrType The block type object, e.g., the response
  *                                        from the block directory; or a string name of
  *                                        an installed block type, e.g.' core/paragraph'.
- * @param {Set}           checkedBlocks   Set of block names that have already been checked.
+ * @param {?string}       rootClientId    Optional root client ID of block list.
  *
  * @return {boolean} Whether the given block type is allowed to be inserted.
  */
 const isBlockVisibleInTheInserter = (
 	state,
 	blockNameOrType,
-	checkedBlocks = new Set()
+	rootClientId = null
 ) => {
 	let blockType;
 	let blockName;
@@ -1621,26 +1621,19 @@ const isBlockVisibleInTheInserter = (
 		return false;
 	}
 
-	if ( checkedBlocks.has( blockName ) ) {
-		return false;
-	}
-
-	checkedBlocks.add( blockName );
-
 	// If parent blocks are not visible, child blocks should be hidden too.
-	if ( Array.isArray( blockType.parent ) ) {
-		return blockType.parent.some(
-			( name ) =>
-				( blockName !== name &&
-					isBlockVisibleInTheInserter(
-						state,
-						name,
-						checkedBlocks
-					) ) ||
-				// Exception for blocks with post-content parent,
-				// the root level is often consider as "core/post-content".
-				// This exception should only apply to the post editor ideally though.
-				name === 'core/post-content'
+	const parents = (
+		Array.isArray( blockType.parent ) ? blockType.parent : []
+	).concat( Array.isArray( blockType.ancestor ) ? blockType.ancestor : [] );
+	if ( parents.length > 0 ) {
+		const rootBlockName = getBlockName( state, rootClientId );
+		// This is an exception to the rule that says that all blocks are visible in the inserter.
+		// Blocks that require a given parent or ancestor are only visible if we're within that parent.
+		return (
+			parents.includes( 'core/post-content' ) ||
+			parents.includes( rootBlockName ) ||
+			getBlockParentsByBlockName( state, rootClientId, parents ).length >
+				0
 		);
 	}
 
@@ -1665,7 +1658,7 @@ const canInsertBlockTypeUnmemoized = (
 	blockName,
 	rootClientId = null
 ) => {
-	if ( ! isBlockVisibleInTheInserter( state, blockName ) ) {
+	if ( ! isBlockVisibleInTheInserter( state, blockName, rootClientId ) ) {
 		return false;
 	}
 
@@ -2072,6 +2065,7 @@ const buildBlockTypeItem =
 			category: blockType.category,
 			keywords: blockType.keywords,
 			parent: blockType.parent,
+			ancestor: blockType.ancestor,
 			variations: inserterVariations,
 			example: blockType.example,
 			utility: 1, // Deprecated.
@@ -2169,7 +2163,11 @@ export const getInserterItems = createRegistrySelector( ( select ) =>
 			} else {
 				blockTypeInserterItems = blockTypeInserterItems
 					.filter( ( blockType ) =>
-						isBlockVisibleInTheInserter( state, blockType )
+						isBlockVisibleInTheInserter(
+							state,
+							blockType,
+							rootClientId
+						)
 					)
 					.map( ( blockType ) => ( {
 						...blockType,
@@ -2501,7 +2499,11 @@ export const __experimentalGetAllowedPatterns = createRegistrySelector(
 										name,
 										rootClientId
 								  )
-								: isBlockVisibleInTheInserter( state, name )
+								: isBlockVisibleInTheInserter(
+										state,
+										name,
+										rootClientId
+								  )
 						)
 				);
 
@@ -2774,6 +2776,9 @@ export function isNavigationMode( state ) {
  */
 export const __unstableGetEditorMode = createRegistrySelector(
 	( select ) => ( state ) => {
+		if ( ! window?.__experimentalEditorWriteMode ) {
+			return 'edit';
+		}
 		return (
 			state.settings.editorTool ??
 			select( preferencesStore ).get( 'core', 'editorTool' )
@@ -2997,14 +3002,6 @@ export function __unstableIsWithinBlockOverlay( state, clientId ) {
 	return false;
 }
 
-function isWithinBlock( state, clientId, parentClientId ) {
-	let parent = state.blocks.parents.get( clientId );
-	while ( !! parent && parent !== parentClientId ) {
-		parent = state.blocks.parents.get( parent );
-	}
-	return parent === parentClientId;
-}
-
 /**
  * @typedef {import('../components/block-editing-mode').BlockEditingMode} BlockEditingMode
  */
@@ -3046,68 +3043,26 @@ export const getBlockEditingMode = createRegistrySelector(
 				clientId = '';
 			}
 
-			// In zoom-out mode, override the behavior set by
-			// __unstableSetBlockEditingMode to only allow editing the top-level
-			// sections.
-			if ( isZoomOut( state ) ) {
-				const sectionRootClientId = getSectionRootClientId( state );
+			const isNavMode = isNavigationMode( state );
 
-				if ( clientId === '' /* ROOT_CONTAINER_CLIENT_ID */ ) {
-					return sectionRootClientId ? 'disabled' : 'contentOnly';
-				}
-				if ( clientId === sectionRootClientId ) {
-					return 'contentOnly';
-				}
-				const sectionsClientIds = getBlockOrder(
-					state,
-					sectionRootClientId
-				);
-
-				// Sections are always contentOnly.
-				if ( sectionsClientIds?.includes( clientId ) ) {
-					return 'contentOnly';
-				}
-
-				return 'disabled';
+			// If the editor is currently not in navigation mode, check if the clientId
+			// has an editing mode set in the regular derived map.
+			// There may be an editing mode set here for synced patterns or in zoomed out
+			// mode.
+			if (
+				! isNavMode &&
+				state.derivedBlockEditingModes?.has( clientId )
+			) {
+				return state.derivedBlockEditingModes.get( clientId );
 			}
 
-			const editorMode = __unstableGetEditorMode( state );
-			if ( editorMode === 'navigation' ) {
-				const sectionRootClientId = getSectionRootClientId( state );
-
-				// The root section is "default mode"
-				if ( clientId === sectionRootClientId ) {
-					return 'default';
-				}
-
-				// Sections should always be contentOnly in navigation mode.
-				const sectionsClientIds = getBlockOrder(
-					state,
-					sectionRootClientId
-				);
-				if ( sectionsClientIds.includes( clientId ) ) {
-					return 'contentOnly';
-				}
-
-				// Blocks outside sections should be disabled.
-				const isWithinSectionRoot = isWithinBlock(
-					state,
-					clientId,
-					sectionRootClientId
-				);
-				if ( ! isWithinSectionRoot ) {
-					return 'disabled';
-				}
-
-				// The rest of the blocks depend on whether they are content blocks or not.
-				// This "flattens" the sections tree.
-				const name = getBlockName( state, clientId );
-				const { hasContentRoleAttribute } = unlock(
-					select( blocksStore )
-				);
-				const isContent = hasContentRoleAttribute( name );
-
-				return isContent ? 'contentOnly' : 'disabled';
+			// If the editor *is* in navigation mode, the block editing mode states
+			// are stored in the derivedNavModeBlockEditingModes map.
+			if (
+				isNavMode &&
+				state.derivedNavModeBlockEditingModes?.has( clientId )
+			) {
+				return state.derivedNavModeBlockEditingModes.get( clientId );
 			}
 
 			// In normal mode, consider that an explicitely set editing mode takes over.
@@ -3117,7 +3072,7 @@ export const getBlockEditingMode = createRegistrySelector(
 			}
 
 			// In normal mode, top level is default mode.
-			if ( ! clientId ) {
+			if ( clientId === '' ) {
 				return 'default';
 			}
 
