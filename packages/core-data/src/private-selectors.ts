@@ -57,7 +57,12 @@ export const getBlockPatternsForPostType = createRegistrySelector(
  */
 export const getEntityRecordsPermissions = createRegistrySelector( ( select ) =>
 	createSelector(
-		( state: State, kind: string, name: string, ids: string[] ) => {
+		(
+			state: State,
+			kind: string,
+			name: string,
+			ids: string | string[]
+		) => {
 			const normalizedIds = Array.isArray( ids ) ? ids : [ ids ];
 			return normalizedIds.map( ( id ) => ( {
 				delete: select( STORE_NAME ).canUser( 'delete', {
@@ -151,7 +156,6 @@ export const getHomePage = createRegistrySelector( ( select ) =>
 			return { postType: 'wp_template', postId: frontPageTemplateId };
 		},
 		( state ) => [
-			// @ts-expect-error
 			getEntityRecord( state, 'root', 'site' ),
 			getDefaultTemplateId( state, {
 				slug: 'front-page',
