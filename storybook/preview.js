@@ -86,6 +86,8 @@ export const globalTypes = {
 			items: [
 				{ value: 'none', title: 'None' },
 				{ value: 'wordpress-sidebar', title: 'WP Sidebar' },
+				{ value: 'small-container', title: 'Small container' },
+				{ value: 'large-container', title: 'Large container' },
 			],
 		},
 	},
