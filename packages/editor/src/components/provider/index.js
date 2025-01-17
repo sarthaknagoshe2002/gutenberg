@@ -57,6 +57,11 @@ const NON_CONTEXTUAL_POST_TYPES = [
 ];
 
 /**
+ * These are rendering modes that the editor supports.
+ */
+const RENDERING_MODES = [ 'post-only', 'template-locked' ];
+
+/**
  * Depending on the post, template and template mode,
  * returns the appropriate blocks and change handlers for the block editor provider.
  *
@@ -72,8 +77,7 @@ const NON_CONTEXTUAL_POST_TYPES = [
  * @return {Array} Block editor props.
  */
 function useBlockEditorProps( post, template, mode ) {
-	const rootLevelPost =
-		mode === 'post-only' || ! template ? 'post' : 'template';
+	const rootLevelPost = mode === 'template-locked' ? 'template' : 'post';
 	const [ postBlocks, onInput, onChange ] = useEntityBlockEditor(
 		'postType',
 		post.type,
@@ -164,30 +168,59 @@ export const ExperimentalEditorProvider = withRegistryProvider(
 		BlockEditorProviderComponent = ExperimentalBlockEditorProvider,
 		__unstableTemplate: template,
 	} ) => {
-		const { editorSettings, selection, isReady, mode, postTypeEntities } =
-			useSelect(
-				( select ) => {
-					const {
-						getEditorSettings,
-						getEditorSelection,
-						getRenderingMode,
-						__unstableIsEditorReady,
-					} = select( editorStore );
-					const { getEntitiesConfig } = select( coreStore );
+		const hasTemplate = !! template;
+		const {
+			editorSettings,
+			selection,
+			isReady,
+			mode,
+			defaultMode,
+			postTypeEntities,
+		} = useSelect(
+			( select ) => {
+				const {
+					getEditorSettings,
+					getEditorSelection,
+					getRenderingMode,
+					__unstableIsEditorReady,
+				} = select( editorStore );
+				const {
+					getEntitiesConfig,
+					getPostType,
+					hasFinishedResolution,
+				} = select( coreStore );
 
-					return {
-						editorSettings: getEditorSettings(),
-						isReady: __unstableIsEditorReady(),
-						mode: getRenderingMode(),
-						selection: getEditorSelection(),
-						postTypeEntities:
-							post.type === 'wp_template'
-								? getEntitiesConfig( 'postType' )
-								: null,
-					};
-				},
-				[ post.type ]
-			);
+				const postTypeSupports = getPostType( post.type )?.supports;
+				const hasLoadedPostObject = hasFinishedResolution(
+					'getPostType',
+					[ post.type ]
+				);
+
+				const _defaultMode = Array.isArray( postTypeSupports?.editor )
+					? postTypeSupports.editor.find(
+							( features ) => 'default-mode' in features
+					  )?.[ 'default-mode' ]
+					: undefined;
+				const hasDefaultMode = RENDERING_MODES.includes( _defaultMode );
+
+				return {
+					editorSettings: getEditorSettings(),
+					isReady: __unstableIsEditorReady() && hasLoadedPostObject,
+					mode: getRenderingMode(),
+					defaultMode:
+						hasTemplate && hasDefaultMode
+							? _defaultMode
+							: 'post-only',
+					selection: getEditorSelection(),
+					postTypeEntities:
+						post.type === 'wp_template'
+							? getEntitiesConfig( 'postType' )
+							: null,
+				};
+			},
+			[ post.type, hasTemplate ]
+		);
+
 		const shouldRenderTemplate = !! template && mode !== 'post-only';
 		const rootLevelPost = shouldRenderTemplate ? template : post;
 		const defaultBlockContext = useMemo( () => {
@@ -282,6 +315,10 @@ export const ExperimentalEditorProvider = withRegistryProvider(
 					}
 				);
 			}
+
+			// The dependencies of the hook are omitted deliberately
+			// We only want to run setupEditor (with initialEdits) only once per post.
+			// A better solution in the future would be to split this effect into multiple ones.
 		}, [] );
 
 		// Synchronizes the active post with the state
@@ -301,15 +338,15 @@ export const ExperimentalEditorProvider = withRegistryProvider(
 
 		// Sets the right rendering mode when loading the editor.
 		useEffect( () => {
-			setRenderingMode( settings.defaultRenderingMode ?? 'post-only' );
-		}, [ settings.defaultRenderingMode, setRenderingMode ] );
+			setRenderingMode( defaultMode );
+		}, [ defaultMode, setRenderingMode ] );
 
 		useHideBlocksFromInserter( post.type, mode );
 
 		// Register the editor commands.
 		useCommands();
 
-		if ( ! isReady ) {
+		if ( ! isReady || ! mode ) {
 			return null;
 		}
 
@@ -366,14 +403,14 @@ export const ExperimentalEditorProvider = withRegistryProvider(
  *
  * All modification and changes are performed to the `@wordpress/core-data` store.
  *
- * @param {Object}  props                      The component props.
- * @param {Object}  [props.post]               The post object to edit. This is required.
- * @param {Object}  [props.__unstableTemplate] The template object wrapper the edited post.
- *                                             This is optional and can only be used when the post type supports templates (like posts and pages).
- * @param {Object}  [props.settings]           The settings object to use for the editor.
- *                                             This is optional and can be used to override the default settings.
- * @param {Element} [props.children]           Children elements for which the BlockEditorProvider context should apply.
- *                                             This is optional.
+ * @param {Object}          props                      The component props.
+ * @param {Object}          [props.post]               The post object to edit. This is required.
+ * @param {Object}          [props.__unstableTemplate] The template object wrapper the edited post.
+ *                                                     This is optional and can only be used when the post type supports templates (like posts and pages).
+ * @param {Object}          [props.settings]           The settings object to use for the editor.
+ *                                                     This is optional and can be used to override the default settings.
+ * @param {React.ReactNode} [props.children]           Children elements for which the BlockEditorProvider context should apply.
+ *                                                     This is optional.
  *
  * @example
  * ```jsx
@@ -386,7 +423,7 @@ export const ExperimentalEditorProvider = withRegistryProvider(
  * </EditorProvider>
  * ```
  *
- * @return {JSX.Element} The rendered EditorProvider component.
+ * @return {React.ReactNode} The rendered EditorProvider component.
  */
 export function EditorProvider( props ) {
 	return (

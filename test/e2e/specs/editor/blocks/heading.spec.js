@@ -214,13 +214,13 @@ test.describe( 'Heading', () => {
 			.getByRole( 'region', {
 				name: 'Editor settings',
 			} )
-			.getByRole( 'button', { name: 'Text' } );
+			.getByRole( 'button', { name: 'Text', exact: true } );
 
 		await textColor.click();
 
 		await page
 			.getByRole( 'option', {
-				name: 'Color: Luminous vivid orange',
+				name: 'Luminous vivid orange',
 			} )
 			.click();
 

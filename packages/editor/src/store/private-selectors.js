@@ -20,15 +20,13 @@ import { store as coreStore } from '@wordpress/core-data';
 /**
  * Internal dependencies
  */
-import {
-	getRenderingMode,
-	getCurrentPost,
-	__experimentalGetDefaultTemplatePartAreas,
-} from './selectors';
+import { getRenderingMode, getCurrentPost } from './selectors';
 import {
 	getEntityActions as _getEntityActions,
+	getEntityFields as _getEntityFields,
 	isEntityReady as _isEntityReady,
 } from '../dataviews/store/private-selectors';
+import { getTemplatePartIcon } from '../utils';
 
 const EMPTY_INSERTION_POINT = {
 	rootClientId: undefined,
@@ -100,11 +98,21 @@ export const getPostIcon = createRegistrySelector(
 				postType === 'wp_template_part' ||
 				postType === 'wp_template'
 			) {
-				return (
-					__experimentalGetDefaultTemplatePartAreas( state ).find(
-						( item ) => options.area === item.area
-					)?.icon || layout
+				const templateAreas =
+					select( coreStore ).getEntityRecord(
+						'root',
+						'__unstableBase'
+					)?.default_template_part_areas || [];
+
+				const areaData = templateAreas.find(
+					( item ) => options.area === item.area
 				);
+
+				if ( areaData?.icon ) {
+					return getTemplatePartIcon( areaData.icon );
+				}
+
+				return layout;
 			}
 			if ( CARD_ICONS[ postType ] ) {
 				return CARD_ICONS[ postType ];
@@ -169,6 +177,10 @@ export function getEntityActions( state, ...args ) {
 
 export function isEntityReady( state, ...args ) {
 	return _isEntityReady( state.dataviews, ...args );
+}
+
+export function getEntityFields( state, ...args ) {
+	return _getEntityFields( state.dataviews, ...args );
 }
 
 /**

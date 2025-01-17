@@ -5,21 +5,6 @@ const glob = require( 'glob' ).sync;
 const { join } = require( 'path' );
 
 /**
- * Internal dependencies
- */
-const { version } = require( './package' );
-
-/**
- * Regular expression string matching a SemVer string with equal major/minor to
- * the current package version. Used in identifying deprecations.
- *
- * @type {string}
- */
-const majorMinorRegExp =
-	version.replace( /\.\d+$/, '' ).replace( /[\\^$.*+?()[\]{}|]/g, '\\$&' ) +
-	'(\\.\\d+)?';
-
-/**
  * The list of patterns matching files used only for development purposes.
  *
  * @type {string[]}
@@ -94,14 +79,6 @@ const restrictedSyntax = [
 	},
 	{
 		selector:
-			'CallExpression[callee.name="deprecated"] Property[key.name="version"][value.value=/' +
-			majorMinorRegExp +
-			'/]',
-		message:
-			'Deprecated functions must be removed before releasing this version.',
-	},
-	{
-		selector:
 			'CallExpression[callee.object.name="page"][callee.property.name="waitFor"]',
 		message:
 			'This method is deprecated. You should use the more explicit API methods available.',
@@ -137,6 +114,11 @@ const restrictedSyntax = [
 		message:
 			'Avoid truthy checks on length property rendering, as zero length is rendered verbatim.',
 	},
+	{
+		selector:
+			'CallExpression[callee.name=/^(__|_x|_n|_nx)$/] > Literal[value=/^toggle\\b/i]',
+		message: "Avoid using the verb 'Toggle' in translatable strings",
+	},
 ];
 
 /** `no-restricted-syntax` rules for components. */
@@ -156,6 +138,7 @@ module.exports = {
 		'plugin:eslint-comments/recommended',
 		'plugin:storybook/recommended',
 	],
+	plugins: [ 'react-compiler' ],
 	globals: {
 		wp: 'off',
 		globalThis: 'readonly',
@@ -222,6 +205,15 @@ module.exports = {
 				definedTags: [ 'jest-environment' ],
 			},
 		],
+		'react-compiler/react-compiler': [
+			'error',
+			{
+				environment: {
+					enableTreatRefLikeIdentifiersAsRefs: true,
+					validateRefAccessDuringRender: false,
+				},
+			},
+		],
 	},
 	overrides: [
 		{
@@ -236,6 +228,7 @@ module.exports = {
 				'import/no-unresolved': 'off',
 				'import/named': 'off',
 				'@wordpress/data-no-store-string-literals': 'off',
+				'react-compiler/react-compiler': 'off',
 			},
 		},
 		{
@@ -551,6 +544,7 @@ module.exports = {
 		{
 			files: [ 'packages/interactivity*/src/**' ],
 			rules: {
+				'react-compiler/react-compiler': 'off',
 				'react/react-in-jsx-scope': 'error',
 			},
 		},

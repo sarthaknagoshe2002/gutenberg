@@ -19,10 +19,11 @@ import { store as coreStore } from '@wordpress/core-data';
  * Internal dependencies
  */
 import EnhancedPaginationControl from './inspector-controls/enhanced-pagination-control';
-import QueryToolbar from './query-toolbar';
 import QueryInspectorControls from './inspector-controls';
 import EnhancedPaginationModal from './enhanced-pagination-modal';
 import { getQueryContextFromTemplate } from '../utils';
+import QueryToolbar from './query-toolbar';
+import { htmlElementMessages } from '../../utils/messages';
 
 const DEFAULTS_POSTS_PER_PAGE = 3;
 
@@ -30,10 +31,9 @@ const TEMPLATE = [ [ 'core/post-template' ] ];
 export default function QueryContent( {
 	attributes,
 	setAttributes,
-	openPatternSelectionModal,
-	name,
 	clientId,
 	context,
+	name,
 } ) {
 	const {
 		queryId,
@@ -133,17 +133,6 @@ export default function QueryContent( {
 		setAttributes( {
 			displayLayout: { ...displayLayout, ...newDisplayLayout },
 		} );
-	const htmlElementMessages = {
-		main: __(
-			'The <main> element should be used for the primary content of your document only.'
-		),
-		section: __(
-			"The <section> element should represent a standalone portion of the document that can't be better represented by another element."
-		),
-		aside: __(
-			"The <aside> element should represent a portion of a document whose content is only indirectly related to the document's main content."
-		),
-	};
 
 	return (
 		<>
@@ -154,6 +143,7 @@ export default function QueryContent( {
 			/>
 			<InspectorControls>
 				<QueryInspectorControls
+					name={ name }
 					attributes={ attributes }
 					setQuery={ updateQuery }
 					setDisplayLayout={ updateDisplayLayout }
@@ -163,13 +153,7 @@ export default function QueryContent( {
 				/>
 			</InspectorControls>
 			<BlockControls>
-				<QueryToolbar
-					name={ name }
-					clientId={ clientId }
-					attributes={ attributes }
-					setQuery={ updateQuery }
-					openPatternSelectionModal={ openPatternSelectionModal }
-				/>
+				<QueryToolbar attributes={ attributes } clientId={ clientId } />
 			</BlockControls>
 			<InspectorControls group="advanced">
 				<SelectControl
