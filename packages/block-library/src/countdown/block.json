@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "core/countdown",
+	"title": "Countdown",
+	"icon": "clock",
+	"description": "A countdown timer block with customizable options.",
+	"textdomain": "default",
+	"attributes": {
+		"endTime": {
+			"type": "string"
+		},
+		"showDays": {
+			"type": "boolean",
+			"default": true
+		},
+		"showHours": {
+			"type": "boolean",
+			"default": true
+		},
+		"showMinutes": {
+			"type": "boolean",
+			"default": true
+		},
+		"showSeconds": {
+			"type": "boolean",
+			"default": true
+		},
+		"actionOnEnd": {
+			"type": "string",
+			"default": "hide"
+		},
+		"actionValue": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"align": true
+	},
+	"style": "file:./style.css"
+}
