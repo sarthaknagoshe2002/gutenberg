@@ -22,7 +22,10 @@ document.addEventListener( 'DOMContentLoaded', () => {
 					clearInterval( interval );
 					return;
 				}
-				if ( actionOnEnd === 'redirect' ) {
+				if (
+					actionOnEnd === 'redirect' &&
+					/^https?:\/\/[\w.-]+\.[a-z]{2,6}/.test( actionValue )
+				) {
 					window.location.href = actionValue;
 				}
 				if ( actionOnEnd === 'showMessage' ) {

@@ -244,8 +244,8 @@ Displays a title with the number of comments. ([Source](https://github.com/WordP
 A countdown timer block with customizable options. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/countdown))
 
 -	**Name:** core/countdown
--	**Supports:** align
--	**Attributes:** actionOnEnd, actionValue, endTime, showDays, showHours, showMinutes, showSeconds
+-	**Supports:** align (full, wide), color (background, gradients, text), spacing (margin, padding), typography (fontSize, lineHeight), ~~html~~
+-	**Attributes:** actionOnEnd, actionValue, bgColor, borderColor, endTime, showDays, showHours, showMinutes, showSeconds
 
 ## Cover
 

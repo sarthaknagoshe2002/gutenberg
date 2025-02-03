@@ -1,4 +1,3 @@
-// index.js
 /**
  * WordPress dependencies
  */
@@ -9,6 +8,7 @@ import {
 	DateTimePicker,
 	TextControl,
 	SelectControl,
+	ColorPalette,
 } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 
@@ -21,6 +21,8 @@ export default function CountdownEdit( { attributes, setAttributes } ) {
 		showSeconds,
 		actionOnEnd,
 		actionValue,
+		bgColor,
+		borderColor,
 	} = attributes;
 
 	const [ remainingTime, setRemainingTime ] = useState();
@@ -48,18 +50,25 @@ export default function CountdownEdit( { attributes, setAttributes } ) {
 		}, 1000 );
 
 		return () => clearInterval( interval );
-	}, [ endTime, remainingTime ] );
+	}, [ endTime ] );
 	return (
 		<div { ...useBlockProps() }>
 			<InspectorControls>
-				<PanelBody title="Countdown Settings">
+				<PanelBody
+					title="Countdown Settings"
+					className="countdown-settings"
+				>
 					<DateTimePicker
 						label="End Time"
-						currentDate={ endTime }
+						currentDate={
+							endTime ||
+							new Date( new Date().getTime() + 60 * 60 * 1000 )
+						}
 						onChange={ ( newTime ) =>
 							setAttributes( { endTime: newTime } )
 						}
 					/>
+					<hr />
 					<ToggleControl
 						label="Show Days"
 						checked={ showDays }
@@ -92,6 +101,7 @@ export default function CountdownEdit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					<hr />
 					<SelectControl
 						label="Action on End"
 						value={ actionOnEnd }
@@ -103,7 +113,10 @@ export default function CountdownEdit( { attributes, setAttributes } ) {
 						onChange={ ( value ) => {
 							setAttributes( {
 								actionOnEnd: value,
-								actionValue: '',
+								actionValue:
+									value === 'showMessage'
+										? 'Countdown Ended'
+										: 'https://example.com',
 							} );
 						} }
 						__next40pxDefaultSize
@@ -116,6 +129,11 @@ export default function CountdownEdit( { attributes, setAttributes } ) {
 							onChange={ ( value ) =>
 								setAttributes( { actionValue: value } )
 							}
+							help={
+								! actionValue.trim()
+									? 'Message cannot be empty.'
+									: ''
+							}
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
@@ -127,34 +145,83 @@ export default function CountdownEdit( { attributes, setAttributes } ) {
 							onChange={ ( value ) =>
 								setAttributes( { actionValue: value } )
 							}
+							help={
+								! /^https?:\/\/[\w.-]+\.[a-z]{2,6}/.test(
+									actionValue
+								)
+									? 'Enter a valid URL (e.g., https://example.com)'
+									: ''
+							}
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
 						/>
 					) }
 				</PanelBody>
+				{ /* Appearance Settings Panel */ }
+				<PanelBody title="Appearance Settings" initialOpen={ false }>
+					<p>Background Color</p>
+					<ColorPalette
+						value={ bgColor }
+						onChange={ ( color ) =>
+							setAttributes( { bgColor: color } )
+						}
+					/>
+
+					<p>Border Color</p>
+					<ColorPalette
+						value={ borderColor }
+						onChange={ ( color ) =>
+							setAttributes( { borderColor: color } )
+						}
+					/>
+				</PanelBody>
 			</InspectorControls>
 			{ remainingTime ? (
 				<div className="countdown">
 					{ showDays && (
-						<div className="countdown-box">
+						<div
+							className="countdown-box"
+							style={ {
+								backgroundColor: bgColor,
+								borderColor,
+							} }
+						>
 							<span>{ remainingTime?.days || 0 }</span>
 							<small>Days</small>
 						</div>
 					) }
 					{ showHours && (
-						<div className="countdown-box">
+						<div
+							className="countdown-box"
+							style={ {
+								backgroundColor: bgColor,
+								borderColor,
+							} }
+						>
 							<span>{ remainingTime?.hours || 0 }</span>
 							<small>Hours</small>
 						</div>
 					) }
 					{ showMinutes && (
-						<div className="countdown-box">
+						<div
+							className="countdown-box"
+							style={ {
+								backgroundColor: bgColor,
+								borderColor,
+							} }
+						>
 							<span>{ remainingTime?.minutes || 0 }</span>
 							<small>Minutes</small>
 						</div>
 					) }
 					{ showSeconds && (
-						<div className="countdown-box">
+						<div
+							className="countdown-box"
+							style={ {
+								backgroundColor: bgColor,
+								borderColor,
+							} }
+						>
 							<span>{ remainingTime?.seconds || 0 }</span>
 							<small>Seconds</small>
 						</div>
