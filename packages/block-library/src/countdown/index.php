@@ -61,33 +61,33 @@ function render_block_core_countdown( $attributes ) {
 
 	ob_start();
 	?>
-	<div <?php echo implode( ' ', $data_attrs ); ?> <?php echo $wrapper_attributes; ?> >
+	<div <?php echo esc_attr( implode( ' ', $data_attrs ) ); ?> <?php echo $wrapper_attributes; ?> >
 		<?php if ( $remaining_time >= 0 ) : ?>
 			<div class="countdown">
 				<?php if ( $show_days ) : ?>
-					<div class="countdown-box countdown-days" style="background-color: <?php echo $bg_color; ?>; 
-			border-color: <?php echo $border_color; ?>;">
+					<div class="countdown-box countdown-days" style="background-color: <?php echo esc_attr( $bg_color ); ?>; 
+			border-color: <?php echo esc_attr( $border_color ); ?>;">
 						<span class="countdown-value"><?php echo esc_html( $days_left ); ?></span>
 						<small>Days</small>
 					</div>
 				<?php endif; ?>
 				<?php if ( $show_hours ) : ?>
-					<div class="countdown-box countdown-hours" style="background-color: <?php echo $bg_color; ?>; 
-			border-color: <?php echo $border_color; ?>;">
+					<div class="countdown-box countdown-hours" style="background-color: <?php echo esc_attr( $bg_color ); ?>; 
+			border-color: <?php echo esc_attr( $border_color ); ?>;">
 						<span class="countdown-value"><?php echo esc_html( $hours_left ); ?></span>
 						<small>Hours</small>
 					</div>
 				<?php endif; ?>
 				<?php if ( $show_minutes ) : ?>
-					<div class="countdown-box countdown-minutes" style="background-color: <?php echo $bg_color; ?>; 
-			border-color: <?php echo $border_color; ?>;">
+					<div class="countdown-box countdown-minutes" style="background-color: <?php echo esc_attr( $bg_color ); ?>; 
+			border-color: <?php echo esc_attr( $border_color ); ?>;">
 						<span class="countdown-value"><?php echo esc_html( $minutes_left ); ?></span>
 						<small>Minutes</small>
 					</div>
 				<?php endif; ?>
 				<?php if ( $show_seconds ) : ?>
-					<div class="countdown-box countdown-seconds" style="background-color: <?php echo $bg_color; ?>; 
-			border-color: <?php echo $border_color; ?>;">
+					<div class="countdown-box countdown-seconds" style="background-color: <?php echo esc_attr( $bg_color ); ?>; 
+			border-color: <?php echo esc_attr( $border_color ); ?>;">
 						<span class="countdown-value"><?php echo esc_html( $seconds_left ); ?></span>
 						<small>Seconds</small>
 					</div>
