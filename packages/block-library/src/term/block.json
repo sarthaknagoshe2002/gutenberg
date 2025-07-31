@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "core/term-query-loop",
+	"title": "Term Query Loop",
+	"category": "theme",
+	"icon": "category",
+	"description": "Loop through and display terms like categories or tags.",
+	"attributes": {
+		"taxonomy": { "type": "string", "default": "category" },
+		"order": { "type": "string", "default": "asc" },
+		"orderby": { "type": "string", "default": "name" },
+		"hideEmpty": { "type": "boolean", "default": true },
+		"perPage": { "type": "number", "default": 5 },
+		"templateOption": { "type": "string" }
+	},
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"interactivity": true
+	},
+	"usesContext": [ "postType" ],
+	"providesContext": {
+		"taxonomy": "taxonomy",
+		"order": "order",
+		"orderby": "orderby",
+		"hideEmpty": "hideEmpty",
+		"perPage": "perPage",
+		"templateOption": "templateOption"
+	}
+}

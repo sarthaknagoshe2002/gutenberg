@@ -934,6 +934,15 @@ Edit the different global regions of your site, like the header, footer, sidebar
 -	**Supports:** align, interactivity (clientNavigation), ~~html~~, ~~renaming~~, ~~reusable~~
 -	**Attributes:** area, slug, tagName, theme
 
+## Term Query Loop
+
+Loop through and display terms like categories or tags. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/term))
+
+-	**Name:** core/term-query-loop
+-	**Category:** theme
+-	**Supports:** interactivity, ~~html~~, ~~reusable~~
+-	**Attributes:** hideEmpty, order, orderby, perPage, taxonomy, templateOption
+
 ## Term Description
 
 Display the description of categories, tags and custom taxonomies when viewing an archive. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/term-description))
@@ -942,6 +951,25 @@ Display the description of categories, tags and custom taxonomies when viewing a
 -	**Category:** theme
 -	**Supports:** align (full, wide), color (background, link, text), interactivity (clientNavigation), spacing (margin, padding), typography (fontSize, lineHeight), ~~html~~
 -	**Attributes:** textAlign
+
+## Term Template
+
+Contains the block elements used to render a post, like the title, date, featured image, content or excerpt, and more. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/term-template))
+
+-	**Name:** core/term-template
+-	**Category:** theme
+-	**Ancestor:** core/term-query-loop
+-	**Supports:** align (full, wide), color (background, gradients, link, text), interactivity (clientNavigation), layout, spacing (blockGap), typography (fontSize, lineHeight), ~~html~~, ~~reusable~~
+-	**Attributes:** hasDesc, hasImg, hasLink, taxonomy, templateOption, termDescription, termId, termLink, termName
+
+## Term Title
+
+Display the title of term. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/term-title))
+
+-	**Name:** core/term-title
+-	**Category:** theme
+-	**Supports:** align (full, wide), color (background, link, text), interactivity (clientNavigation), spacing (margin, padding), typography (fontSize, lineHeight), ~~html~~
+-	**Attributes:** isLink, level, levelOptions, linkTarget, rel, textAlign
 
 ## Text Columns (deprecated)
 

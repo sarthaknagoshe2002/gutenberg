@@ -16,6 +16,7 @@ import {
 export default function TermDescriptionEdit( {
 	attributes,
 	setAttributes,
+	context: { termDescription },
 	mergedStyle,
 } ) {
 	const { textAlign } = attributes;
@@ -37,7 +38,11 @@ export default function TermDescriptionEdit( {
 			</BlockControls>
 			<div { ...blockProps }>
 				<div className="wp-block-term-description__placeholder">
-					<span>{ __( 'Term Description' ) }</span>
+					{ termDescription ? (
+						<span>{ termDescription }</span>
+					) : (
+						<span>{ __( 'Term Description' ) }</span>
+					) }
 				</div>
 			</div>
 		</>

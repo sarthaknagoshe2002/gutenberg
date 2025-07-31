@@ -1,15 +1,35 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "core/term-description",
-	"title": "Term Description",
+	"name": "core/term-title",
+	"title": "Term Title",
 	"category": "theme",
-	"description": "Display the description of categories, tags and custom taxonomies when viewing an archive.",
+	"description": "Display the title of term.",
 	"textdomain": "default",
-	"usesContext": [ "termDescription" ],
+	"usesContext": [ "termName", "termLink" ],
 	"attributes": {
 		"textAlign": {
 			"type": "string"
+		},
+		"level": {
+			"type": "number",
+			"default": 2
+		},
+		"levelOptions": {
+			"type": "array"
+		},
+		"isLink": {
+			"type": "boolean",
+			"default": false
+		},
+		"rel": {
+			"type": "string",
+			"attribute": "rel",
+			"default": ""
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "_self"
 		}
 	},
 	"supports": {

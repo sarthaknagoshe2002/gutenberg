@@ -117,6 +117,9 @@ import * as table from './table';
 import * as tableOfContents from './table-of-contents';
 import * as tagCloud from './tag-cloud';
 import * as templatePart from './template-part';
+import * as term from './term';
+import * as termTemplate from './term-template';
+import * as termTitle from './term-title';
 import * as termDescription from './term-description';
 import * as textColumns from './text-columns';
 import * as verse from './verse';
@@ -233,6 +236,9 @@ const getAllBlocks = () => {
 		termDescription,
 		queryTitle,
 		postAuthorBiography,
+		term,
+		termTemplate,
+		termTitle,
 	];
 	if ( window?.__experimentalEnableFormBlocks ) {
 		blocks.push( form );
