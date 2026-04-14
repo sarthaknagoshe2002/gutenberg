@@ -44,6 +44,7 @@ export default function BreadcrumbEdit( {
 		postTypeHasTaxonomies,
 		hasTermsAssigned,
 		isLoading,
+		isSingular,
 	} = useSelect(
 		( select ) => {
 			if ( ! postType ) {
@@ -81,6 +82,7 @@ export default function BreadcrumbEdit( {
 					( postId && ! _post ) ||
 					! postTypeObject ||
 					( _postTypeHasTaxonomies && ! taxonomies ),
+				isSingular: !! postId,
 			};
 		},
 		[ postType, postId ]
@@ -141,9 +143,12 @@ export default function BreadcrumbEdit( {
 
 	// Try to determine breadcrumb type for more accurate previews.
 	let _showTerms;
-	// Some non-hierarchical post types (e.g., attachments) can have parents.
-	// Use hierarchical breadcrumbs if a parent exists, otherwise use taxonomy breadcrumbs.
-	if ( ! isPostTypeHierarchical && ! post?.parent ) {
+	if ( isSingular ) {
+		// Do not show terms on singular posts by default
+		_showTerms = false;
+		// Some non-hierarchical post types (e.g., attachments) can have parents.
+		// Use hierarchical breadcrumbs if a parent exists, otherwise use taxonomy breadcrumbs.
+	} else if ( ! isPostTypeHierarchical && ! post?.parent ) {
 		_showTerms = true;
 	} else if ( ! postTypeHasTaxonomies ) {
 		// Hierarchical post type without taxonomies can only use ancestors.
